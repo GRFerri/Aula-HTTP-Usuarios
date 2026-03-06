@@ -1,80 +1,37 @@
 const express = require('express');
+const cors = require('cors');
+const path = require('path');
+
 const app = express();
+const PORT = 3000;
 
-app.use(express.json()); 
+// enable CORS for all origins (allows file:// or other domains to call the API)
+app.use(cors());
+app.use(express.json());
 
-let usuarios = [
-    {id: 1, nome: "Ana", idade: 20, email: "ana@gmail.com"},
-    {id: 2, nome: "Carlos", idade: 25, email: "carlos@gmail.com"},
-    {id: 3, nome: "Maria", idade: 30, email: "maria@gmail.com"}
+// optional: serve static files so you can open the page via http://localhost:3000
+app.use(express.static(__dirname));
 
+// in‑memory comments store
+let comentarios = [
+    { nome: 'João', comentario: 'Muito legal o post!' },
+    { nome: 'Marcos', comentario: 'Achei bem interessante!' }
 ];
 
-
-app.get('/usuarios', (req, res) => {
-    res.json(usuarios);
+app.get('/comentarios', (req, res) => {
+    res.json(comentarios);
 });
 
-app.get('/usuarios/:id', (req, res) => {
-    const id = Number(req.params.id);
-    const usuario = usuarios.find(u => u.id === id);
-
-    if (!usuario) {
-        return res.status(404).json({ erro: "Usuário não encontrado" });
+app.post('/comentarios', (req, res) => {
+    const { nome, comentario } = req.body;
+    if (!nome || !comentario) {
+        return res.status(400).json({ erro: 'Nome e comentário são obrigatórios' });
     }
-    res.json(usuario);
-
-});
-
-app.post('/usuarios', (req, res) => {
-    const nome = req.body.nome;
-    const idade = req.body.idade;
-    const email = req.body.email;
-
-    if (!nome || !idade || !email) return res.status(400).json({ erro: 'Nome, idade e email são obrigatórios' });
-
-    const novo = { id: usuarios.length + 1, nome: nome, idade: idade, email: email };
-    usuarios.push(novo);
+    const novo = { nome, comentario };
+    comentarios.push(novo);
     res.status(201).json(novo);
 });
 
-app.put('/usuarios/:id', (req, res) => {
-    const id = Number(req.params.id);
-    const nome = req.body.nome;
-    const idade = req.body.idade;
-    const email = req.body.email;
-
-    if (!nome || !idade || !email) return res.status(400).json({ erro: 'Nome, idade e email são obrigatórios' });
-
-    const idx = usuarios.findIndex(u => u.id === id);
-    if (idx === -1) return res.status(404).json({ erro: 'Usuário não encontrado' });
-
-    const atualizado = { id, nome, idade, email };
-    usuarios[idx] = atualizado;
-    res.json(atualizado);
-});
-
-app.patch('/usuarios/:id', (req, res) => {
-    const id = Number(req.params.id);
-    const usuario = usuarios.find(u => u.id === id);
-    if (!usuario) return res.status(404).json({ erro: 'Usuário não encontrado' });
-
-    const { nome, idade, email } = req.body;
-    if (nome !== undefined) usuario.nome = nome;
-    if (idade !== undefined) usuario.idade = idade;
-    if (email !== undefined) usuario.email = email;
-
-    res.json(usuario);
-});
-
-app.delete('/usuarios/:id', (req, res) => {
-    const id = Number(req.params.id);
-    const idx = usuarios.findIndex(u => u.id === id);
-    if (idx === -1) return res.status(404).json({ erro: 'Usuário não encontrado' });
-    const removido = usuarios.splice(idx, 1)[0];
-    res.json(removido);
-});
-
-app.listen(3001, () => {
-    console.log('Servidor rodando em http://localhost:3001/usuarios');
+app.listen(PORT, () => {
+    console.log(`Servidor de comentários rodando em http://localhost:${PORT}`);
 });
