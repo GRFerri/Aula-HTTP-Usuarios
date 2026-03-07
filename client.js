@@ -7,10 +7,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderComentarios(items) {
         lista.innerHTML = '';
-        items.forEach(c => {
+        items.forEach((c, index) => {
             const item = document.createElement('div');
             item.className = 'comentario-item';
-            item.innerHTML = `<strong>${c.nome}:</strong>\n<p>${c.comentario}</p>`;
+            item.innerHTML = `
+                <div class="comentario-header">
+                    <strong>${c.nome}:</strong>
+                    <button class="btn-delete" onclick="deleteComentario(${index})" title="Deletar comentário">🗑️</button>
+                </div>
+                <p>${c.comentario}</p>
+            `;
             lista.appendChild(item);
         });
     }
@@ -43,4 +49,21 @@ document.addEventListener('DOMContentLoaded', () => {
             })
             .catch(err => console.error('Erro ao enviar comentário:', err));
     });
+
+    // Função para deletar comentário
+    window.deleteComentario = (index) => {
+        if (confirm('Tem certeza que deseja deletar este comentário?')) {
+            const comentarioId = comentarios[index].id;
+            fetch(`http://localhost:3000/comentarios/${comentarioId}`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' }
+            })
+                .then(res => res.json())
+                .then(() => {
+                    comentarios.splice(index, 1);
+                    renderComentarios(comentarios);
+                })
+                .catch(err => console.error('Erro ao deletar comentário:', err));
+        }
+    };
 });

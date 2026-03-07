@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula CSS</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="myDiv">
+        Boa noite
+    </div>
+    <br>
+    <label>Padding: <span id="paddingValue">0</span>px</label><br>
+    <input type="range" id="padding" min="0" max="100" value="0" oninput="updatePadding()">
+    <br>
+    <label>Border: <span id="borderValue">0</span>px</label><br>
+    <input type="range" id="border" min="0" max="20" value="0" oninput="updateBorder()">
+    <br>
+    <label>Margin: <span id="marginValue">0</span>px</label><br>
+    <input type="range" id="margin" min="0" max="100" value="0" oninput="updateMargin()">
+
+    <script src="script.js"></script>
+</body>
+</html>

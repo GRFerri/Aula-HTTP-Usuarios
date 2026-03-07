@@ -1,0 +1,13 @@
+#myDiv {
+    color: white;
+    background-color: rgb(125, 57, 125);
+    width: 100px;
+    height: 100px;
+    box-sizing: border-box;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+}
