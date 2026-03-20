@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Outlaw Social | Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="vh-100 d-flex justify-content-center align-items-center" style="background-image: url('https://images.alphacoders.com/946/946554.jpg'); background-size: cover; background-position: center;">
+    
+    <div class="card p-4 col-11 col-sm-8 col-md-6 col-lg-4 text-center shadow-lg" style="--bs-bg-opacity: 0.9;">
+        <h1>Identifique-se</h1>
+        <p class="text-muted">Procuramos parceiros fiéis.</p>
+        <form onsubmit="event.preventDefault(); window.location.href='feed.html';">
+            <div class="mb-3 text-start">
+                <label class="form-label fw-bold">Telegrama (Email)</label>
+                <input type="email" class="form-control" required placeholder="arthur@vanderlinde.com">
+            </div>
+            <div class="mb-4 text-start">
+                <label class="form-label fw-bold">Chave Secreta (Senha)</label>
+                <input type="password" class="form-control" required placeholder="••••••••">
+            </div>
+            <button type="submit" class="btn btn-rdr w-100 mb-3 btn-lg">Montar no Cavalo</button>
+            <a href="cadastro.html" class="text-decoration-none text-danger fw-bold">Novo no território? Cadastre-se.</a>
+        </form>
+    </div>
+
+    <script>
+    // --- SISTEMA DE TEMA (MODO NOTURNO) ---
+    function toggleTheme() {
+        const html = document.documentElement;
+        const temaAtual = html.getAttribute('data-bs-theme');
+        const novoTema = temaAtual === 'dark' ? 'light' : 'dark';
+        
+        // Troca o tema visual
+        html.setAttribute('data-bs-theme', novoTema);
+        
+        // Salva para manter em todas as telas
+        try {
+            localStorage.setItem('theme', novoTema);
+        } catch (e) {
+            console.log("Modo local bloqueou o salvamento.");
+        }
+
+        // Atualiza o botão da barra superior
+        const btnNav = document.getElementById('theme-toggle');
+        if (btnNav) {
+            btnNav.innerHTML = novoTema === 'dark' ? '<i class="bi bi-sun-fill text-warning"></i>' : '<i class="bi bi-moon-fill"></i>';
+        }
+
+        // Atualiza o botão switch das configurações
+        const btnConfig = document.getElementById('themeSwitch');
+        if (btnConfig) {
+            btnConfig.checked = (novoTema === 'dark');
+        }
+    }
+
+    // Ao carregar QUALQUER página, checa o tema salvo e aplica
+    window.addEventListener('DOMContentLoaded', () => {
+        let temaSalvo = 'light';
+        try {
+            temaSalvo = localStorage.getItem('theme') || 'light';
+        } catch (e) {}
+        
+        document.documentElement.setAttribute('data-bs-theme', temaSalvo);
+        
+        const btnNav = document.getElementById('theme-toggle');
+        if (btnNav) {
+            btnNav.innerHTML = temaSalvo === 'dark' ? '<i class="bi bi-sun-fill text-warning"></i>' : '<i class="bi bi-moon-fill"></i>';
+        }
+        
+        const btnConfig = document.getElementById('themeSwitch');
+        if (btnConfig) {
+            btnConfig.checked = (temaSalvo === 'dark');
+        }
+    });
+
+    // --- SISTEMA INTERATIVO (FEED, LIKES, COMENTÁRIOS E LOGOUT) ---
+
+    function simularLogout() {
+        alert("Você deserdou da gangue do Van der Linde. Até logo, parceiro!");
+        window.location.href = "login.html";
+    }
+
+    // Função para dar Like (Sacar Honra)
+    function handleLike(btn) {
+        let icon = btn.querySelector('i');
+        if (icon.classList.contains('bi-heart')) {
+            icon.classList.replace('bi-heart', 'bi-heart-fill');
+            btn.innerHTML = `<i class="bi bi-heart-fill"></i> Sacado!`;
+        } else {
+            icon.classList.replace('bi-heart-fill', 'bi-heart');
+            btn.innerHTML = `<i class="bi bi-heart"></i> Sacar (Honra)`;
+        }
+    }
+
+    // Função para mostrar/esconder a barra de comentário
+    function toggleCommentForm(btn) {
+        let commentsSection = btn.closest('.post-card').querySelector('.post-comments');
+        if (commentsSection.style.display === 'none' || commentsSection.style.display === '') {
+            commentsSection.style.display = 'block';
+            commentsSection.querySelector('input').focus();
+        } else {
+            commentsSection.style.display = 'none';
+        }
+    }
+
+    // Função para adicionar um comentário novo
+    function handleCommentSubmit(event, form) {
+        event.preventDefault();
+        let input = form.querySelector('input');
+        let text = input.value.trim();
+        if (!text) return;
+
+        let commentsList = form.closest('.post-comments').querySelector('.comments-list');
+        let newComment = document.createElement('div');
+        newComment.className = 'text-muted small Lora ps-3 border-start border-danger mb-2 py-1';
+        newComment.innerHTML = `<strong class="text-danger">Arthur Morgan:</strong> ${text}`;
+
+        commentsList.appendChild(newComment);
+        input.value = '';
+    }
+
+    // Função para criar uma postagem nova
+    function handleNewPost(event) {
+        event.preventDefault();
+        let textarea = document.getElementById('new-post-text');
+        if (!textarea) return; // Se não estiver na página de feed, ignora
+        let text = textarea.value.trim();
+        if (!text) return;
+
+        let feedContainer = document.getElementById('feed-container');
+        let newPost = document.createElement('div');
+        newPost.className = 'card post-card shadow border-dark mb-4';
+        let time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        
+        newPost.innerHTML = `
+            <div class="post-header d-flex align-items-center">
+                <img src="https://i.pinimg.com/736x/8a/10/7a/8a107a6ebbb56738928178a9c29808a7.jpg" class="rounded-circle me-3 border border-danger" width="50" height="50" style="object-fit: cover;">
+                <div>
+                    <h5 class="m-0"><a href="perfil.html" class="text-decoration-none text-danger Rye">Arthur Morgan</a></h5>
+                    <small class="text-muted Lora">Agora mesmo às ${time} • <i class="bi bi-geo-alt"></i> Acampamento</small>
+                </div>
+            </div>
+            <div class="post-body">
+                <p class="Lora fs-5 m-0 p-2">${text}</p>
+            </div>
+            <div class="post-actions d-flex gap-3">
+                <button class="btn btn-link text-decoration-none p-0 text-danger Lora" onclick="handleLike(this)"><i class="bi bi-heart"></i> Sacar (Honra)</button>
+                <button class="btn btn-link text-decoration-none p-0 text-muted Lora" onclick="toggleCommentForm(this)"><i class="bi bi-chat-left"></i> Responder</button>
+            </div>
+            <div class="post-comments p-3 border-top border-dark" style="display: none; background-color: rgba(0,0,0,0.02);">
+                <div class="comments-list mb-3"></div>
+                <form class="d-flex" onsubmit="handleCommentSubmit(event, this)">
+                    <input type="text" class="form-control form-control-sm me-2 Lora border-danger" placeholder="Deixe um recado..." required>
+                    <button type="submit" class="btn btn-rdr btn-sm">Enviar</button>
+                </form>
+            </div>
+        `;
+        
+        feedContainer.prepend(newPost);
+        textarea.value = '';
+    }
+</script>
+</body>
+</html>

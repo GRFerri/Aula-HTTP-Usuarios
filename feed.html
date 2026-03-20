@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-bs-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Outlaw Social | Mural do Acampamento</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="style.css">
+    
+    <style>
+        /* =========================================
+           NOVAS ANIMAÇÕES E ESTILOS CSS
+           ========================================= */
+
+        /* 1. Animação de Entrada Suave (Slide In + Fade In) */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Aplica a animação na entrada da página para os cards existentes */
+        .post-card {
+            animation: slideIn 0.5s ease-out forwards;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+
+        /* Aplica a animação especificamente para novos posts criados */
+        .new-post-animation {
+            animation: slideIn 0.4s ease-out forwards;
+        }
+
+        /* 2. Efeito de Foco (Hover) nos Cards */
+        .post-card:hover {
+            transform: translateY(-3px); /* Levanta levemente */
+            box-shadow: 0 10px 20px rgba(220, 53, 69, 0.15) !important; /* Sombra vermelha sutil */
+            border-color: #dc3545 !important; /* Borda vermelha ativa */
+        }
+
+        /* 3. Transições Suaves para Botões e Links */
+        .btn, .nav-link, .navbar-brand {
+            transition: all 0.2s ease-in-out !important;
+        }
+
+        /* Efeito de zoom sutil nos botões principais */
+        .btn-rdr:hover, .btn-outline-danger:hover {
+            transform: scale(1.03);
+        }
+
+        /* 4. Micro-animação na Lixeira */
+        .btn-excluir {
+            transition: transform 0.2s ease;
+        }
+        .btn-excluir:hover {
+            transform: scale(1.1) rotate(-5deg);
+        }
+
+        /* Animação do Coração ao dar Like (Mantida e Suavizada) */
+        @keyframes pop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+            100% { transform: scale(1); }
+        }
+        .heart-pop {
+            display: inline-block;
+            animation: pop 0.3s ease-out;
+            color: #dc3545 !important;
+        }
+
+        /* Estilos Base Mantidos */
+        .comment-text-container {
+            word-break: break-word;
+            flex-grow: 1;
+        }
+        .post-img {
+            max-height: 500px;
+            width: 100%;
+            object-fit: cover;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top bg-dark shadow">
+        <div class="container">
+            <a class="navbar-brand Rye" href="feed.html">Outlaw Social</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item"><a class="nav-link active" href="feed.html">Acampamento</a></li>
+                    <li class="nav-item"><a class="nav-link" href="perfil.html">Diário</a></li>
+                    <li class="nav-item">
+                        <button id="theme-toggle" class="btn btn-sm btn-outline-light ms-2 me-2" onclick="toggleTheme()">
+                            <i class="bi bi-moon-fill"></i>
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button onclick="simularLogout()" class="btn btn-sm btn-danger ms-2">Sair</button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-xl-8 col-lg-10">
+
+                <div class="card post-card p-4 shadow mb-5 border-danger">
+                    <div class="d-flex align-items-center mb-3">
+                        <img id="feed-avatar-user" src="https://i.pinimg.com/736x/8a/10/7a/8a107a6ebbb56738928178a9c29808a7.jpg" class="rounded-circle me-3 border border-danger" width="50" height="50" style="object-fit: cover;">
+                        <h4 id="feed-nome-user" class="m-0 text-dark-emphasis Rye">Arthur Morgan</h4>
+                    </div>
+                    <form onsubmit="handleNewPost(event)">
+                        <textarea id="new-post-text" class="form-control mb-3 Lora" rows="3" placeholder="O que você está tramando, parceiro?" required></textarea>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <button type="button" class="btn btn-outline-secondary btn-sm"><i class="bi bi-camera me-1"></i> Foto</button>
+                            <button type="submit" class="btn btn-rdr px-4">Publicar</button>
+                        </div>
+                    </form>
+                </div>
+
+                <h3 class="mb-4 Rye border-bottom border-danger pb-2">Mural da Gangue</h3>
+
+                <div id="feed-container">
+                    
+                    <div class="card post-card shadow border-dark mb-4">
+                        <div class="post-header d-flex align-items-center p-3">
+                            <img src="https://cdnb.artstation.com/p/assets/images/images/070/265/047/large/anastasija-libbo-prola-dutch-01-anaprola-2023.jpg?1702133665" class="rounded-circle me-3 border border-dark" width="50" height="50" style="object-fit: cover;">
+                            <div>
+                                <h5 class="m-0"><a href="#" class="text-decoration-none text-danger Rye">Dutch v. d. Linde</a></h5>
+                                <small class="text-muted Lora">Há 2 horas • <i class="bi bi-globe-americas"></i> Blackwater</small>
+                            </div>
+                        </div>
+                        
+                        <div class="post-img-container">
+                            <img src="src/e04da32a8cd4a2b3bb9c91d87541bab5.jpg" alt="Dutch e Arthur" class="post-img img-fluid">
+                        </div>
+
+                        <div class="post-body p-3">
+                            <p class="Lora"><strong>Dutch:</strong> Arthur, eu tenho um PLANO! Só precisamos de um pouco mais de dinheiro e faremos nossa última grande pontuação. Tahiti nos espera!</p>
+                        </div>
+
+                        <div class="post-actions d-flex gap-3 p-3 border-top">
+                            <button class="btn btn-link text-decoration-none p-0 text-danger Lora" onclick="handleLike(this)">
+                                <i class="bi bi-heart"></i> Sacar (Honra)
+                            </button>
+                            <button class="btn btn-link text-decoration-none p-0 text-muted Lora" onclick="toggleCommentForm(this)">
+                                <i class="bi bi-chat-left"></i> Responder
+                            </button>
+                        </div>
+
+                        <div class="post-comments p-3 border-top bg-light-subtle" style="display: none;">
+                            <div class="comments-list mb-3">
+                                <div class="d-flex justify-content-between align-items-start text-muted small Lora ps-3 border-start border-danger mb-2 py-1 comment-item">
+                                    <div class="comment-text-container">
+                                        <strong class="text-danger">John Marston:</strong> Dutch, se esse plano der errado, eu sumo com a minha família.
+                                    </div>
+                                    <button type="button" class="btn btn-sm btn-outline-danger p-1 ms-3 flex-shrink-0 btn-excluir" onclick="deleteComment(this)" title="Excluir">🗑️</button>
+                                </div>
+                            </div>
+
+                            <form class="d-flex" onsubmit="handleCommentSubmit(event, this)">
+                                <input type="text" class="form-control form-control-sm me-2 Lora border-danger" placeholder="Escreva algo..." required>
+                                <button type="submit" class="btn btn-rdr btn-sm">Enviar</button>
+                            </form>
+                        </div>
+                    </div>
+
+                </div> </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // --- SISTEMA DE SALVAMENTO (V9 - Atualizado para as novas animações) ---
+        function salvarFeed() {
+            const feed = document.getElementById('feed-container');
+            if (feed) {
+                localStorage.setItem('meuFeedSalvoV9', feed.innerHTML);
+            }
+        }
+
+        function deleteComment(botao) {
+            let comentario = botao.closest('.comment-item');
+            if (comentario) {
+                if (confirm("Deseja apagar esse registro do diário, parceiro?")) {
+                    comentario.remove();
+                    salvarFeed();
+                }
+            }
+        }
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const temaAtual = html.getAttribute('data-bs-theme');
+            const novoTema = temaAtual === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-bs-theme', novoTema);
+            localStorage.setItem('theme', novoTema);
+            const btnNav = document.getElementById('theme-toggle');
+            btnNav.innerHTML = novoTema === 'dark' ? '<i class="bi bi-sun-fill text-warning"></i>' : '<i class="bi bi-moon-fill"></i>';
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            let temaSalvo = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-bs-theme', temaSalvo);
+            const btnNav = document.getElementById('theme-toggle');
+            if(btnNav) btnNav.innerHTML = temaSalvo === 'dark' ? '<i class="bi bi-sun-fill text-warning"></i>' : '<i class="bi bi-moon-fill"></i>';
+
+            const perfilGuardado = localStorage.getItem('meuPerfilSalvo');
+            if (perfilGuardado) {
+                const dados = JSON.parse(perfilGuardado);
+                document.getElementById('feed-nome-user').textContent = dados.nome;
+                document.getElementById('feed-avatar-user').src = dados.avatar;
+            }
+
+            const feedContainer = document.getElementById('feed-container');
+            let feedSalvo = localStorage.getItem('meuFeedSalvoV9');
+            if (feedContainer && feedSalvo) {
+                feedContainer.innerHTML = feedSalvo;
+            }
+        });
+
+        function handleLike(btn) {
+            let isLiked = btn.innerHTML.includes('bi-heart-fill');
+            if (!isLiked) {
+                btn.innerHTML = `<i class="bi bi-heart-fill heart-pop"></i> Sacado!`;
+            } else {
+                btn.innerHTML = `<i class="bi bi-heart"></i> Sacar (Honra)`;
+            }
+            salvarFeed();
+        }
+
+        function toggleCommentForm(btn) {
+            let commentsSection = btn.closest('.post-card').querySelector('.post-comments');
+            commentsSection.style.display = (commentsSection.style.display === 'none' || commentsSection.style.display === '') ? 'block' : 'none';
+        }
+
+        function handleCommentSubmit(event, form) {
+            event.preventDefault();
+            let input = form.querySelector('input');
+            let text = input.value.trim();
+            if (!text) return;
+
+            let nomeUsuario = document.getElementById('feed-nome-user').textContent;
+            let commentsList = form.closest('.post-comments').querySelector('.comments-list');
+            let newComment = document.createElement('div');
+            // Adiciona classe de animação para novos comentários também
+            newComment.className = 'd-flex justify-content-between align-items-start text-muted small Lora ps-3 border-start border-danger mb-2 py-1 comment-item new-post-animation';
+            
+            newComment.innerHTML = `
+                <div class="comment-text-container"><strong class="text-danger">${nomeUsuario}:</strong> ${text}</div>
+                <button type="button" class="btn btn-sm btn-outline-danger p-1 ms-3 flex-shrink-0 btn-excluir" onclick="deleteComment(this)">🗑️</button>
+            `;
+
+            commentsList.appendChild(newComment);
+            input.value = '';
+            salvarFeed();
+        }
+
+        function handleNewPost(event) {
+            event.preventDefault();
+            let textarea = document.getElementById('new-post-text');
+            let text = textarea.value.trim();
+            if (!text) return;
+
+            let nomeUsuario = document.getElementById('feed-nome-user').textContent;
+            let fotoUsuario = document.getElementById('feed-avatar-user').src;
+
+            let feedContainer = document.getElementById('feed-container');
+            let newPost = document.createElement('div');
+            // Adiciona classe 'new-post-animation' para o slideIn suave
+            newPost.className = 'card post-card shadow border-dark mb-4 new-post-animation';
+            
+            newPost.innerHTML = `
+                <div class="post-header d-flex align-items-center p-3">
+                    <img src="${fotoUsuario}" class="rounded-circle me-3 border border-danger" width="50" height="50" style="object-fit: cover;">
+                    <div>
+                        <h5 class="m-0"><a href="perfil.html" class="text-decoration-none text-danger Rye">${nomeUsuario}</a></h5>
+                        <small class="text-muted Lora">Agora mesmo • <i class="bi bi-geo-alt"></i> Acampamento</small>
+                    </div>
+                </div>
+                <div class="post-body p-3">
+                    <p class="Lora fs-5 m-0">${text}</p>
+                </div>
+                <div class="post-actions d-flex gap-3 p-3 border-top">
+                    <button class="btn btn-link text-decoration-none p-0 text-danger Lora" onclick="handleLike(this)"><i class="bi bi-heart"></i> Sacar (Honra)</button>
+                    <button class="btn btn-link text-decoration-none p-0 text-muted Lora" onclick="toggleCommentForm(this)"><i class="bi bi-chat-left"></i> Responder</button>
+                </div>
+                <div class="post-comments p-3 border-top bg-light-subtle" style="display: none;">
+                    <div class="comments-list mb-3"></div>
+                    <form class="d-flex" onsubmit="handleCommentSubmit(event, this)">
+                        <input type="text" class="form-control form-control-sm me-2 Lora border-danger" placeholder="Escreva algo..." required>
+                        <button type="submit" class="btn btn-rdr btn-sm">Enviar</button>
+                    </form>
+                </div>
+            `;
+            feedContainer.prepend(newPost);
+            textarea.value = '';
+            salvarFeed();
+        }
+
+        function simularLogout() {
+            alert("Saindo do acampamento...");
+            window.location.href = "login.html";
+        }
+    </script>
+</body>
+</html>

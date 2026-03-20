@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Outlaw Social | Diário</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="feed.html">Outlaw Social</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item"><a class="nav-link" href="feed.html">Acampamento</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="perfil.html">Diário</a></li>
+                    <li class="nav-item"><button id="theme-toggle" class="btn btn-sm btn-outline-light ms-2 me-2" onclick="toggleTheme()"></button></li>
+                    <li class="nav-item"><button onclick="simularLogout()" class="btn btn-sm btn-danger ms-2">Sair</button></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-xl-8 col-lg-10">
+                
+                <div class="card shadow border-dark mb-4">
+                    <div style="height: 200px; background-image: url('https://images8.alphacoders.com/946/946624.jpg'); background-size: cover; background-position: center; border-radius: 5px 5px 0 0;"></div>
+                    
+                    <div class="card-body position-relative text-center pb-5">
+                        <img id="display-avatar" src="https://i.pinimg.com/736x/8a/10/7a/8a107a6ebbb56738928178a9c29808a7.jpg" 
+                             class="rounded-circle border border-5 border-white bg-white position-absolute top-0 start-50 translate-middle shadow" 
+                             style="width: 150px; height: 150px; object-fit: cover; margin-top: -10px;">
+                        
+                        <div style="margin-top: 80px;">
+                            <h2 id="display-nome" class="Rye text-danger">Arthur Morgan</h2>
+                            <p class="text-muted mb-2"><i class="bi bi-geo-alt"></i> <span id="display-local">Acampamento de Horseshoe Overlook</span></p>
+                            <p id="display-bio" class="Lora fs-5 px-4 mt-3">Sobrevivente, fora da lei e atirador de elite da gangue Van der Linde. A lealdade é tudo que me resta.</p>
+                            
+                            <button class="btn btn-outline-danger mt-3 px-4 Lora fw-bold" data-bs-toggle="modal" data-bs-target="#modalEditarPerfil">
+                                <i class="bi bi-pencil-square"></i> Editar Diário
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalEditarPerfil" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content border-danger">
+                <div class="modal-header bg-dark text-white border-danger">
+                    <h5 class="modal-title Rye">Atualizar Informações</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body Lora">
+                    <form id="form-perfil" onsubmit="salvarPerfil(event)">
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Seu Nome</label>
+                            <input type="text" class="form-control border-dark" id="input-nome" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Localização atual</label>
+                            <input type="text" class="form-control border-dark" id="input-local">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Sua História (Bio)</label>
+                            <textarea class="form-control border-dark" id="input-bio" rows="3"></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">URL da Foto de Perfil</label>
+                            <input type="url" class="form-control border-dark" id="input-avatar" placeholder="Cole o link de uma imagem aqui">
+                            <small class="text-muted">Deixe em branco para manter a foto atual.</small>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2 mt-4">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-rdr">Salvar Alterações</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function salvarPerfil(event) {
+            event.preventDefault();
+
+            const nome = document.getElementById('input-nome').value;
+            const local = document.getElementById('input-local').value;
+            const bio = document.getElementById('input-bio').value;
+            const avatar = document.getElementById('input-avatar').value;
+
+            const dadosPerfil = {
+                nome: nome,
+                local: local,
+                bio: bio,
+                avatar: avatar || "https://i.pinimg.com/736x/8a/10/7a/8a107a6ebbb56738928178a9c29808a7.jpg"
+            };
+
+            localStorage.setItem('meuPerfilSalvo', JSON.stringify(dadosPerfil));
+            atualizarTelaPerfil(dadosPerfil);
+
+            const modalElement = document.getElementById('modalEditarPerfil');
+            const modalInstance = bootstrap.Modal.getInstance(modalElement);
+            modalInstance.hide();
+        }
+
+        function atualizarTelaPerfil(dados) {
+            document.getElementById('display-nome').textContent = dados.nome;
+            document.getElementById('display-local').textContent = dados.local;
+            document.getElementById('display-bio').textContent = dados.bio;
+            document.getElementById('display-avatar').src = dados.avatar;
+            
+            document.getElementById('input-nome').value = dados.nome;
+            document.getElementById('input-local').value = dados.local;
+            document.getElementById('input-bio').value = dados.bio;
+            document.getElementById('input-avatar').value = dados.avatar;
+        }
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const temaAtual = html.getAttribute('data-bs-theme');
+            const novoTema = temaAtual === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-bs-theme', novoTema);
+            try { localStorage.setItem('theme', novoTema); } catch (e) {}
+
+            const btnNav = document.getElementById('theme-toggle');
+            if (btnNav) btnNav.innerHTML = novoTema === 'dark' ? '<i class="bi bi-sun-fill text-warning"></i>' : '<i class="bi bi-moon-fill"></i>';
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            let temaSalvo = 'light';
+            try { temaSalvo = localStorage.getItem('theme') || 'light'; } catch (e) {}
+            document.documentElement.setAttribute('data-bs-theme', temaSalvo);
+            const btnNav = document.getElementById('theme-toggle');
+            if (btnNav) btnNav.innerHTML = temaSalvo === 'dark' ? '<i class="bi bi-sun-fill text-warning"></i>' : '<i class="bi bi-moon-fill"></i>';
+
+            const perfilGuardado = localStorage.getItem('meuPerfilSalvo');
+            
+            if (perfilGuardado) {
+                const dados = JSON.parse(perfilGuardado);
+                atualizarTelaPerfil(dados);
+            } else {
+                document.getElementById('input-nome').value = document.getElementById('display-nome').textContent;
+                document.getElementById('input-local').value = document.getElementById('display-local').textContent;
+                document.getElementById('input-bio').value = document.getElementById('display-bio').textContent;
+                document.getElementById('input-avatar').value = document.getElementById('display-avatar').src;
+            }
+        });
+
+        function simularLogout() {
+            alert("Você deserdou da gangue do Van der Linde. Até logo, parceiro!");
+            window.location.href = "login.html";
+        }
+    </script>
+</body>
+</html>
