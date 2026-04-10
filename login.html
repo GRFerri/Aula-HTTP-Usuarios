@@ -7,11 +7,20 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="vh-100 d-flex justify-content-center align-items-center" style="background-image: url('https://images.alphacoders.com/946/946554.jpg'); background-size: cover; background-position: center;">
+<body class="vh-100 d-flex justify-content-center align-items-center" style="background-image: url('/src/wild-west-background-jyikrncb67hbij16.jpg'); background-size: cover; background-position: center;">
     
     <div class="card p-4 col-11 col-sm-8 col-md-6 col-lg-4 text-center shadow-lg" style="--bs-bg-opacity: 0.9;">
         <h1>Identifique-se</h1>
+
+        <div class="d-flex justify-content-center mb-3">
+            <img src="/src/9e0cbb92-d58d-4879-9044-2f6f15a74b6d-removebg-preview.png" 
+                 alt="Logo Outlaw Social" 
+                 class="img-fluid" 
+                 style="max-width: 150px;">
+        </div>
+
         <p class="text-muted">Procuramos parceiros fiéis.</p>
+
         <form onsubmit="event.preventDefault(); window.location.href='feed.html';">
             <div class="mb-3 text-start">
                 <label class="form-label fw-bold">Telegrama (Email)</label>
@@ -27,36 +36,30 @@
     </div>
 
     <script>
-    // --- SISTEMA DE TEMA (MODO NOTURNO) ---
     function toggleTheme() {
         const html = document.documentElement;
         const temaAtual = html.getAttribute('data-bs-theme');
         const novoTema = temaAtual === 'dark' ? 'light' : 'dark';
         
-        // Troca o tema visual
         html.setAttribute('data-bs-theme', novoTema);
         
-        // Salva para manter em todas as telas
         try {
             localStorage.setItem('theme', novoTema);
         } catch (e) {
             console.log("Modo local bloqueou o salvamento.");
         }
 
-        // Atualiza o botão da barra superior
         const btnNav = document.getElementById('theme-toggle');
         if (btnNav) {
             btnNav.innerHTML = novoTema === 'dark' ? '<i class="bi bi-sun-fill text-warning"></i>' : '<i class="bi bi-moon-fill"></i>';
         }
 
-        // Atualiza o botão switch das configurações
         const btnConfig = document.getElementById('themeSwitch');
         if (btnConfig) {
             btnConfig.checked = (novoTema === 'dark');
         }
     }
 
-    // Ao carregar QUALQUER página, checa o tema salvo e aplica
     window.addEventListener('DOMContentLoaded', () => {
         let temaSalvo = 'light';
         try {
@@ -76,14 +79,11 @@
         }
     });
 
-    // --- SISTEMA INTERATIVO (FEED, LIKES, COMENTÁRIOS E LOGOUT) ---
-
     function simularLogout() {
         alert("Você deserdou da gangue do Van der Linde. Até logo, parceiro!");
         window.location.href = "login.html";
     }
 
-    // Função para dar Like (Sacar Honra)
     function handleLike(btn) {
         let icon = btn.querySelector('i');
         if (icon.classList.contains('bi-heart')) {
@@ -95,7 +95,6 @@
         }
     }
 
-    // Função para mostrar/esconder a barra de comentário
     function toggleCommentForm(btn) {
         let commentsSection = btn.closest('.post-card').querySelector('.post-comments');
         if (commentsSection.style.display === 'none' || commentsSection.style.display === '') {
@@ -106,7 +105,6 @@
         }
     }
 
-    // Função para adicionar um comentário novo
     function handleCommentSubmit(event, form) {
         event.preventDefault();
         let input = form.querySelector('input');
@@ -122,11 +120,10 @@
         input.value = '';
     }
 
-    // Função para criar uma postagem nova
     function handleNewPost(event) {
         event.preventDefault();
         let textarea = document.getElementById('new-post-text');
-        if (!textarea) return; // Se não estiver na página de feed, ignora
+        if (!textarea) return; 
         let text = textarea.value.trim();
         if (!text) return;
 

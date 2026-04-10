@@ -10,11 +10,7 @@
     <link rel="stylesheet" href="style.css">
     
     <style>
-        /* =========================================
-           NOVAS ANIMAÇÕES E ESTILOS CSS
-           ========================================= */
-
-        /* 1. Animação de Entrada Suave (Slide In + Fade In) */
+  
         @keyframes slideIn {
             from {
                 opacity: 0;
@@ -87,11 +83,14 @@
     </style>
 </head>
 
-<body>
+<body style="background-image: url('/src/fundocerto.png'); background-size: cover; background-position: center; background-attachment: fixed;">
 
     <nav class="navbar navbar-expand-lg navbar-dark sticky-top bg-dark shadow">
         <div class="container">
-            <a class="navbar-brand Rye" href="feed.html">Outlaw Social</a>
+             <a class="navbar-brand" href="feed.html">
+                <img src="/src/9e0cbb92-d58d-4879-9044-2f6f15a74b6d-removebg-preview.png" alt="Outlaw Social"
+                    style="max-height: 100px;">
+            </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -122,9 +121,12 @@
                         <h4 id="feed-nome-user" class="m-0 text-dark-emphasis Rye">Arthur Morgan</h4>
                     </div>
                     <form onsubmit="handleNewPost(event)">
-                        <textarea id="new-post-text" class="form-control mb-3 Lora" rows="3" placeholder="O que você está tramando, parceiro?" required></textarea>
+                        <textarea id="new-post-text" class="form-control mb-2 Lora" rows="3" placeholder="O que você está tramando, parceiro?" required></textarea>
+                        
+                        <input type="url" id="new-post-img-url" class="form-control mb-3 Lora border-secondary" placeholder="Cole a URL da foto aqui..." style="display: none;">
+                        
                         <div class="d-flex justify-content-between align-items-center">
-                            <button type="button" class="btn btn-outline-secondary btn-sm"><i class="bi bi-camera me-1"></i> Foto</button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="toggleImageInput()"><i class="bi bi-camera me-1"></i> Foto</button>
                             <button type="submit" class="btn btn-rdr px-4">Publicar</button>
                         </div>
                     </form>
@@ -177,17 +179,18 @@
                         </div>
                     </div>
 
-                </div> </div>
+                </div> 
+            </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // --- SISTEMA DE SALVAMENTO (V9 - Atualizado para as novas animações) ---
+        // --- SISTEMA DE SALVAMENTO (V12 - Adicionado suporte para imagem via URL) ---
         function salvarFeed() {
             const feed = document.getElementById('feed-container');
             if (feed) {
-                localStorage.setItem('meuFeedSalvoV9', feed.innerHTML);
+                localStorage.setItem('meuFeedSalvoV12', feed.innerHTML);
             }
         }
 
@@ -201,6 +204,16 @@
             }
         }
 
+        function deletePost(botao) {
+            let post = botao.closest('.post-card');
+            if (post) {
+                if (confirm("Quer mesmo jogar esse aviso na fogueira?")) {
+                    post.remove();
+                    salvarFeed();
+                }
+            }
+        }
+
         function toggleTheme() {
             const html = document.documentElement;
             const temaAtual = html.getAttribute('data-bs-theme');
@@ -209,6 +222,18 @@
             localStorage.setItem('theme', novoTema);
             const btnNav = document.getElementById('theme-toggle');
             btnNav.innerHTML = novoTema === 'dark' ? '<i class="bi bi-sun-fill text-warning"></i>' : '<i class="bi bi-moon-fill"></i>';
+        }
+
+        // Função para mostrar ou esconder o input de URL da foto
+        function toggleImageInput() {
+            const imgInput = document.getElementById('new-post-img-url');
+            if (imgInput.style.display === 'none') {
+                imgInput.style.display = 'block';
+                imgInput.focus();
+            } else {
+                imgInput.style.display = 'none';
+                imgInput.value = ''; // Limpa se o usuário desistir de mandar foto
+            }
         }
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -225,9 +250,11 @@
             }
 
             const feedContainer = document.getElementById('feed-container');
-            let feedSalvo = localStorage.getItem('meuFeedSalvoV9');
+            let feedSalvo = localStorage.getItem('meuFeedSalvoV12');
             if (feedContainer && feedSalvo) {
                 feedContainer.innerHTML = feedSalvo;
+            } else {
+                salvarFeed();
             }
         });
 
@@ -255,7 +282,7 @@
             let nomeUsuario = document.getElementById('feed-nome-user').textContent;
             let commentsList = form.closest('.post-comments').querySelector('.comments-list');
             let newComment = document.createElement('div');
-            // Adiciona classe de animação para novos comentários também
+            
             newComment.className = 'd-flex justify-content-between align-items-start text-muted small Lora ps-3 border-start border-danger mb-2 py-1 comment-item new-post-animation';
             
             newComment.innerHTML = `
@@ -272,6 +299,11 @@
             event.preventDefault();
             let textarea = document.getElementById('new-post-text');
             let text = textarea.value.trim();
+            
+            // Pega o valor da URL da imagem
+            let imgInput = document.getElementById('new-post-img-url');
+            let imgUrl = imgInput.value.trim();
+            
             if (!text) return;
 
             let nomeUsuario = document.getElementById('feed-nome-user').textContent;
@@ -279,17 +311,33 @@
 
             let feedContainer = document.getElementById('feed-container');
             let newPost = document.createElement('div');
-            // Adiciona classe 'new-post-animation' para o slideIn suave
+            
             newPost.className = 'card post-card shadow border-dark mb-4 new-post-animation';
             
-            newPost.innerHTML = `
-                <div class="post-header d-flex align-items-center p-3">
-                    <img src="${fotoUsuario}" class="rounded-circle me-3 border border-danger" width="50" height="50" style="object-fit: cover;">
-                    <div>
-                        <h5 class="m-0"><a href="perfil.html" class="text-decoration-none text-danger Rye">${nomeUsuario}</a></h5>
-                        <small class="text-muted Lora">Agora mesmo • <i class="bi bi-geo-alt"></i> Acampamento</small>
+            // Se tiver URL de imagem, cria a estrutura HTML da imagem
+            let imagemHtml = '';
+            if (imgUrl) {
+                imagemHtml = `
+                    <div class="post-img-container">
+                        <img src="${imgUrl}" alt="Imagem do post" class="post-img img-fluid">
                     </div>
+                `;
+            }
+            
+            newPost.innerHTML = `
+                <div class="post-header d-flex align-items-center justify-content-between p-3">
+                    <div class="d-flex align-items-center">
+                        <img src="${fotoUsuario}" class="rounded-circle me-3 border border-danger" width="50" height="50" style="object-fit: cover;">
+                        <div>
+                            <h5 class="m-0"><a href="perfil.html" class="text-decoration-none text-danger Rye">${nomeUsuario}</a></h5>
+                            <small class="text-muted Lora">Agora mesmo • <i class="bi bi-geo-alt"></i> Acampamento</small>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-sm text-danger p-0 btn-excluir" onclick="deletePost(this)" title="Excluir Post">
+                        <i class="bi bi-trash fs-4"></i>
+                    </button>
                 </div>
+                ${imagemHtml}
                 <div class="post-body p-3">
                     <p class="Lora fs-5 m-0">${text}</p>
                 </div>
@@ -306,7 +354,12 @@
                 </div>
             `;
             feedContainer.prepend(newPost);
+            
+            // Limpa os campos depois de publicar
             textarea.value = '';
+            imgInput.value = '';
+            imgInput.style.display = 'none';
+            
             salvarFeed();
         }
 
